@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+npm-debug.log*
+
+# Originaux lourds venant du Drive : on ne versionne que les versions optimisées
+assets-src/*
+!assets-src/.gitkeep

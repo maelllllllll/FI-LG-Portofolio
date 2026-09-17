@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+import Entete from '../components/Entete.astro';
+import PiedDePage from '../components/PiedDePage.astro';
+
+const { titre, description = '', sombre = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&display=swap"
+    />
+
+    <noscript>
+      <style>
+        /* Sans JS, rien ne vient déclencher l'apparition : on affiche tout. */
+        .apparait {
+          opacity: 1;
+          transform: none;
+        }
+      </style>
+    </noscript>
+  </head>
+
+  <body data-sombre={sombre}>
+    <a class="invisible" href="#principal">Aller au contenu</a>
+    <Entete />
+    <main id="principal">
+      <slot />
+    </main>
+    <PiedDePage />
+
+    <script>
+      // Révèle les blocs au fil du défilement. Purement décoratif : sans JS,
+      // le CSS `.apparait` reste invisible, donc on force l'état visible ici
+      // avant d'observer quoi que ce soit.
+      const blocs = document.querySelectorAll('.apparait');
+
+      if (!('IntersectionObserver' in window)) {
+        blocs.forEach((bloc) => bloc.classList.add('vu'));
+      } else {
+        const observateur = new IntersectionObserver(
+          (entrees) => {
+            entrees.forEach((entree) => {
+              if (entree.isIntersecting) {
+                entree.target.classList.add('vu');
+                observateur.unobserve(entree.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
+        );
+        blocs.forEach((bloc) => observateur.observe(bloc));
+      }
+    </script>
+  </body>
+</html>

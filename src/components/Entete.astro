@@ -1,0 +1,201 @@
+---
+import { sections, identite } from '../data/site.js';
+
+const chemin = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="entete">
+  <div class="entete__barre contenu">
+    <a class="entete__marque" href="/">
+      <span class="entete__initiales">LGP</span>
+      <span class="invisible">{identite.prenom} {identite.nom} — accueil</span>
+    </a>
+
+    <button
+      class="entete__bouton"
+      type="button"
+      aria-expanded="false"
+      aria-controls="navigation"
+    >
+      <span class="invisible">Ouvrir le menu</span>
+      <span class="entete__trait" aria-hidden="true"></span>
+      <span class="entete__trait" aria-hidden="true"></span>
+    </button>
+
+    <nav class="entete__nav" id="navigation" aria-label="Navigation principale">
+      <ul>
+        {
+          sections.map((section) => (
+            <li>
+              <a
+                href={`/${section.slug}`}
+                aria-current={chemin === `/${section.slug}` ? 'page' : undefined}
+              >
+                <span class="entete__numero">{section.numero}</span>
+                {section.titre}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .entete {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    padding-block: 1.25rem;
+    background: linear-gradient(
+      to bottom,
+      rgb(16 15 13 / 0.85),
+      rgb(16 15 13 / 0)
+    );
+    backdrop-filter: blur(2px);
+  }
+
+  .entete__barre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .entete__initiales {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .entete__nav ul {
+    display: flex;
+    gap: clamp(1.25rem, 2.5vw, 2.75rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entete__nav a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--texte-sourd);
+    padding-block: 0.35rem;
+    border-bottom: 1px solid transparent;
+    transition: color var(--moyen), border-color var(--moyen);
+  }
+
+  .entete__nav a:hover,
+  .entete__nav a[aria-current='page'] {
+    color: var(--texte);
+    border-bottom-color: var(--accent);
+  }
+
+  .entete__numero {
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .entete__bouton {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .entete__trait {
+    display: block;
+    width: 26px;
+    height: 1px;
+    background: var(--texte);
+    transition: transform var(--moyen), opacity var(--moyen);
+  }
+
+  /* --- Mobile : le menu se déplie sous la barre -------------------------- */
+  @media (max-width: 860px) {
+    .entete__bouton {
+      display: flex;
+    }
+
+    .entete__nav {
+      position: absolute;
+      inset: 100% 0 auto 0;
+      background: var(--noir);
+      border-block: 1px solid rgb(242 236 225 / 0.12);
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--moyen);
+    }
+
+    .entete__nav ul {
+      flex-direction: column;
+      gap: 0;
+      overflow: hidden;
+      padding-inline: var(--gouttiere);
+    }
+
+    .entete__nav li {
+      border-bottom: 1px solid rgb(242 236 225 / 0.08);
+    }
+
+    .entete__nav li:last-child {
+      border-bottom: 0;
+    }
+
+    .entete__nav a {
+      padding-block: 1.15rem;
+      font-size: 0.9rem;
+    }
+
+    .entete:has(.entete__bouton[aria-expanded='true']) .entete__nav {
+      grid-template-rows: 1fr;
+    }
+
+    .entete__bouton[aria-expanded='true'] .entete__trait:first-child {
+      transform: translateY(3.5px) rotate(45deg);
+    }
+
+    .entete__bouton[aria-expanded='true'] .entete__trait:last-child {
+      transform: translateY(-3.5px) rotate(-45deg);
+    }
+  }
+</style>
+
+<script>
+  const bouton = document.querySelector('.entete__bouton');
+  const nav = document.getElementById('navigation');
+
+  bouton?.addEventListener('click', () => {
+    const ouvert = bouton.getAttribute('aria-expanded') === 'true';
+    bouton.setAttribute('aria-expanded', String(!ouvert));
+    bouton.querySelector('.invisible').textContent = ouvert
+      ? 'Ouvrir le menu'
+      : 'Fermer le menu';
+  });
+
+  // Referme le menu quand on choisit une destination ou qu'on appuie sur Échap.
+  nav?.addEventListener('click', (evenement) => {
+    if (evenement.target.closest('a')) {
+      bouton?.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', (evenement) => {
+    if (evenement.key === 'Escape') {
+      bouton?.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>

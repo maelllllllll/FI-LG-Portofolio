@@ -1,0 +1,149 @@
+/* ===========================================================================
+   Système graphique — Laura Gauthier-Petit
+   Typo : Futura (identité FI). Jost prend le relais si Futura n'est pas
+   installée chez le visiteur : c'est le revival libre le plus proche.
+   Palette : noir profond, crème, laiton — plus le rouge et le vert de la
+   collection Appolonie en accents secondaires.
+   =========================================================================== */
+
+:root {
+  --noir: #100f0d;
+  --noir-doux: #1a1815;
+  --creme: #f2ece1;
+  --creme-sourd: #c9c1b4;
+  --laiton: #b8925a;
+  --laiton-clair: #d4b37f;
+  --rouge: #8c1c1c;
+  --vert: #1f3d2f;
+
+  --fond: var(--noir);
+  --texte: var(--creme);
+  --texte-sourd: var(--creme-sourd);
+  --accent: var(--laiton);
+
+  --display: 'Futura', 'Futura PT', 'Jost', 'Century Gothic', sans-serif;
+  --courant: 'Jost', 'Futura', 'Helvetica Neue', Arial, sans-serif;
+
+  --gouttiere: clamp(1.25rem, 5vw, 5rem);
+  --max: 1440px;
+
+  --lent: 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  --moyen: 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--courant);
+  font-weight: 300;
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.02;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* --- Utilitaires ---------------------------------------------------------- */
+
+.contenu {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gouttiere);
+}
+
+.surtitre {
+  font-family: var(--display);
+  font-size: 0.75rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.filet {
+  border: 0;
+  border-top: 1px solid rgb(242 236 225 / 0.14);
+  margin: 0;
+}
+
+/* Lecteurs d'écran uniquement */
+.invisible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Apparition au scroll ------------------------------------------------- */
+
+.apparait {
+  opacity: 0;
+  transform: translateY(2.5rem);
+  transition: opacity var(--lent), transform var(--lent);
+}
+
+.apparait.vu {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .apparait {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Accessibilité clavier ------------------------------------------------ */
+
+:focus-visible {
+  outline: 2px solid var(--laiton-clair);
+  outline-offset: 3px;
+}

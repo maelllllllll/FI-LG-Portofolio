@@ -1,0 +1,98 @@
+---
+import { identite, sections, contact } from '../data/site.js';
+
+const annee = new Date().getFullYear();
+const liens = [
+  contact.email && { libelle: 'Email', href: `mailto:${contact.email}` },
+  contact.instagram && { libelle: 'Instagram', href: contact.instagram },
+  contact.siteMarque && { libelle: 'Fête Impériale', href: contact.siteMarque },
+].filter(Boolean);
+---
+
+<footer class="pied">
+  <hr class="filet" />
+  <div class="contenu pied__grille">
+    <div>
+      <p class="surtitre">{identite.prenom} {identite.nom}</p>
+      <p class="pied__titres">{identite.titres.join(' · ')}</p>
+    </div>
+
+    <nav class="pied__nav" aria-label="Navigation de bas de page">
+      <ul>
+        {
+          sections.map((section) => (
+            <li>
+              <a href={`/${section.slug}`}>{section.titre}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {
+      liens.length > 0 && (
+        <ul class="pied__contacts">
+          {liens.map((lien) => (
+            <li>
+              <a href={lien.href}>{lien.libelle}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+
+  <p class="contenu pied__mention">© {annee} {identite.prenom} {identite.nom}</p>
+</footer>
+
+<style>
+  .pied {
+    padding-top: clamp(3rem, 8vw, 6rem);
+    padding-bottom: 2.5rem;
+  }
+
+  .pied__grille {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    padding-top: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .pied__titres {
+    margin: 0.75rem 0 0;
+    color: var(--texte-sourd);
+    font-size: 0.9rem;
+  }
+
+  .pied__nav ul,
+  .pied__contacts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .pied__nav a,
+  .pied__contacts a {
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--texte-sourd);
+    transition: color var(--moyen);
+  }
+
+  .pied__nav a:hover,
+  .pied__contacts a:hover {
+    color: var(--accent);
+  }
+
+  .pied__mention {
+    margin: clamp(3rem, 7vw, 5rem) auto 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgb(242 236 225 / 0.35);
+  }
+</style>
