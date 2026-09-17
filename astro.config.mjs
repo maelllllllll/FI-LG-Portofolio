@@ -11,9 +11,13 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
-  // Le site est 100 % statique : il se déploie tel quel sur n'importe quel
-  // hébergeur (GitHub Pages, Vercel, Netlify, un FTP classique...).
-  // `site` et `base` seront renseignés une fois l'hébergement choisi.
+  // Adresse de publication. `base` est indispensable : GitHub Pages sert le
+  // site depuis un sous-dossier, et Astro génère sinon des chemins absolus
+  // vers ses propres fichiers JavaScript (/assets/...) qui pointent à côté.
+  // Les composants React ne se chargeaient alors jamais.
+  site: 'https://maelllllllll.github.io',
+  base: '/FI-LG-Portofolio',
+
   build: {
     // Une page = un fichier .html à la racine. Aucune réécriture d'URL
     // n'est alors nécessaire côté serveur, quel que soit l'hébergeur.
