@@ -107,11 +107,14 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
   .hero__voile {
     position: absolute;
     inset: 0;
+    /* La photo de fond est claire : sans un voile franc vers le bas, le nom
+       en crème et le contour disparaissent dessus. */
     background: linear-gradient(
       to bottom,
-      rgb(16 15 13 / 0.55) 0%,
-      rgb(16 15 13 / 0.15) 35%,
-      rgb(16 15 13 / 0.75) 85%,
+      rgb(16 15 13 / 0.6) 0%,
+      rgb(16 15 13 / 0.22) 30%,
+      rgb(16 15 13 / 0.72) 62%,
+      rgb(16 15 13 / 0.92) 85%,
       var(--noir) 100%
     );
   }
