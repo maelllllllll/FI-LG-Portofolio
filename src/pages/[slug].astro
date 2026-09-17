@@ -87,12 +87,12 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
   }
 
   /* A landscape image spans two columns when there is room for it. */
-  .galerie__item--paysage {
+  .galerie__item--landscape {
     grid-column: span 2;
   }
 
   @media (max-width: 52rem) {
-    .galerie__item--paysage {
+    .galerie__item--landscape {
       grid-column: span 1;
     }
   }
@@ -111,11 +111,11 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
     aspect-ratio: 4 / 5;
   }
 
-  .galerie__item--paysage img {
+  .galerie__item--landscape img {
     aspect-ratio: 16 / 10;
   }
 
-  .galerie__item--libre img {
+  .galerie__item--free img {
     aspect-ratio: auto;
   }
 

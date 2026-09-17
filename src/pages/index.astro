@@ -206,7 +206,8 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
 
   .portrait__figure img {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    /* 3:4 = les proportions du portrait fourni : rien n'est rogné. */
+    aspect-ratio: 3 / 4;
     object-fit: cover;
   }
 
@@ -285,10 +286,15 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
     flex-direction: column;
     gap: 0.2rem;
     padding: clamp(1rem, 2.5vw, 1.75rem);
+    /* Le voile doit rester lisible sur une couverture claire (une page de
+       magazine, un motif sur fond blanc) autant que sur une photo sombre :
+       d'où un dégradé haut et franc plutôt qu'un simple assombrissement. */
+    padding-top: clamp(3rem, 8vw, 5rem);
     background: linear-gradient(
       to top,
-      rgb(16 15 13 / 0.92),
-      rgb(16 15 13 / 0)
+      rgb(16 15 13 / 0.96) 0%,
+      rgb(16 15 13 / 0.86) 45%,
+      rgb(16 15 13 / 0) 100%
     );
   }
 

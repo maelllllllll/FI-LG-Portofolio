@@ -25,6 +25,13 @@ Tout le texte (nom, titres, chapôs, légendes) et les chemins d'images sont
 dans **`src/data/site.js`**. C'est le seul fichier à toucher pour changer un
 libellé ou ajouter une photo à une galerie.
 
+## Récupérer les fichiers depuis le Drive
+
+Le connecteur Google Drive plafonne les téléchargements à **10 Mo par
+fichier**. Les visuels plus lourds (photos Madura, PSD, PDF de la revue de
+presse) doivent donc être déposés à la main dans `assets-src/`, ou réexportés
+sous les 10 Mo avant d'être récupérés automatiquement.
+
 ## Ajouter des images
 
 Les fichiers du Drive font 10 à 18 Mo : ils doivent être allégés avant d'être
@@ -33,7 +40,10 @@ mis en ligne.
 1. Déposer les originaux dans `assets-src/` (ce dossier n'est pas versionné) ;
 2. `npm run images` — les versions redimensionnées (2400 px de large max,
    JPEG + WebP) sont écrites dans `public/images/` ;
-3. Référencer le chemin `/images/…` dans `src/data/site.js`.
+3. Référencer le chemin `images/…` dans `src/data/site.js`.
+
+Les couvertures de rubrique sont fabriquées à part par
+`node scripts/make-covers.mjs` (recadrages et mise en page du blason).
 
 ## Typographie
 
