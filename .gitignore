@@ -7,3 +7,6 @@ npm-debug.log*
 # Originaux lourds venant du Drive : on ne versionne que les versions optimisées
 assets-src/*
 !assets-src/.gitkeep
+
+# Types générés par Astro
+.astro/

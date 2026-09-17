@@ -1,0 +1,30 @@
+/* ===========================================================================
+   Tailwind — utilitaires seulement.
+   Le "preflight" de Tailwind (sa remise à zéro globale des styles) est
+   volontairement écarté : le site a déjà sa propre base dans global.css, et
+   le charger réécrirait des règles existantes. On ne prend donc que le thème
+   et les classes utilitaires, qui s'ajoutent sans rien casser.
+   Pour réactiver la remise à zéro un jour :
+     @import 'tailwindcss/preflight.css' layer(base);
+   =========================================================================== */
+
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Les couleurs de la charte, utilisables en classes Tailwind
+   (bg-noir, text-laiton, border-creme...). */
+@theme {
+  --color-noir: #100f0d;
+  --color-noir-doux: #1a1815;
+  --color-creme: #f2ece1;
+  --color-creme-sourd: #c9c1b4;
+  --color-laiton: #b8925a;
+  --color-laiton-clair: #d4b37f;
+  --color-rouge: #8c1c1c;
+  --color-vert: #1f3d2f;
+
+  --font-display: 'Futura', 'Futura PT', 'Jost', 'Century Gothic', sans-serif;
+  --font-courant: 'Jost', 'Futura', 'Helvetica Neue', Arial, sans-serif;
+}

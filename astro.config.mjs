@@ -1,6 +1,16 @@
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  // React ne s'exécute que dans les composants qui le demandent : les pages
+  // .astro existantes restent du HTML statique, sans JavaScript envoyé.
+  integrations: [react()],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
   // Le site est 100 % statique : il se déploie tel quel sur n'importe quel
   // hébergeur (GitHub Pages, Vercel, Netlify, un FTP classique...).
   // `site` et `base` seront renseignés une fois l'hébergement choisi.
