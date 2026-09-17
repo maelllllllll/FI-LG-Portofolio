@@ -1,19 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import { identite, sections } from '../data/site.js';
+import { identity, sections, href } from '../data/site.js';
 
-const nomComplet = `${identite.prenom} ${identite.nom}`;
+const fullName = `${identity.firstName} ${identity.lastName}`;
 ---
 
 <Base
-  titre={`${nomComplet} — Portfolio`}
-  description={`Portfolio de ${nomComplet} : ${identite.titres.join(', ')}.`}
+  title={`${fullName} — Portfolio`}
+  description={`Portfolio of ${fullName} — ${identity.titles.join(', ')}.`}
 >
   {/* ---------------------------------------------------------------- Hero */}
   <section class="hero">
     <img
       class="hero__fond"
-      src={identite.imageFond}
+      src={identity.heroImage}
       alt=""
       fetchpriority="high"
       decoding="async"
@@ -22,16 +22,16 @@ const nomComplet = `${identite.prenom} ${identite.nom}`;
 
     <div class="contenu hero__texte">
       <h1 class="hero__nom">
-        <span>{identite.prenom}</span>
-        <span>{identite.nom}</span>
+        <span>{identity.firstName}</span>
+        <span>{identity.lastName}</span>
       </h1>
 
       <ul class="hero__titres">
-        {identite.titres.map((titre) => <li>{titre}</li>)}
+        {identity.titles.map((title) => <li>{title}</li>)}
       </ul>
     </div>
 
-    <a class="hero__descendre" href="#portrait" aria-label="Découvrir">
+    <a class="hero__descendre" href="#portrait" aria-label="Scroll down">
       <span aria-hidden="true"></span>
     </a>
   </section>
@@ -39,40 +39,40 @@ const nomComplet = `${identite.prenom} ${identite.nom}`;
   {/* ------------------------------------------------------------ Portrait */}
   <section class="portrait contenu" id="portrait">
     <figure class="portrait__figure apparait">
-      <img src={identite.portrait} alt={`Portrait de ${nomComplet}`} loading="lazy" />
+      <img src={identity.portrait} alt={`Portrait of ${fullName}`} loading="lazy" />
       {
-        identite.portraitLegende && (
-          <figcaption>{identite.portraitLegende}</figcaption>
+        identity.portraitCaption && (
+          <figcaption>{identity.portraitCaption}</figcaption>
         )
       }
     </figure>
 
     <div class="portrait__texte apparait">
       <p class="surtitre">Portrait</p>
-      <p class="portrait__accroche">{nomComplet}</p>
-      {identite.bio && <p class="portrait__bio">{identite.bio}</p>}
+      <p class="portrait__accroche">{fullName}</p>
+      {identity.bio && <p class="portrait__bio">{identity.bio}</p>}
     </div>
   </section>
 
   {/* ------------------------------------------------------------ Sections */}
   <section class="acces" aria-labelledby="acces-titre">
     <div class="contenu">
-      <p class="surtitre">Le portfolio</p>
-      <h2 class="acces__titre" id="acces-titre">Quatre chapitres</h2>
+      <p class="surtitre">The portfolio</p>
+      <h2 class="acces__titre" id="acces-titre">Four chapters</h2>
     </div>
 
     <ul class="acces__liste contenu">
       {
         sections.map((section) => (
           <li class="apparait">
-            <a class="carte" href={`/${section.slug}`}>
+            <a class="carte" href={href(section.slug)}>
               <span class="carte__image">
-                <img src={section.couverture} alt="" loading="lazy" />
+                <img src={section.cover} alt="" loading="lazy" />
               </span>
               <span class="carte__corps">
-                <span class="carte__numero">{section.numero}</span>
-                <span class="carte__titre">{section.titre}</span>
-                <span class="carte__soustitre">{section.sousTitre}</span>
+                <span class="carte__numero">{section.number}</span>
+                <span class="carte__titre">{section.title}</span>
+                <span class="carte__soustitre">{section.subtitle}</span>
               </span>
             </a>
           </li>

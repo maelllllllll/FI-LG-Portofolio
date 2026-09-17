@@ -1,31 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
-import { sections, identite } from '../data/site.js';
+import { sections, identity, href } from '../data/site.js';
 
-// Une page par entrée de `sections` dans src/data/site.js.
+// One page per entry in `sections` (src/data/site.js).
 export function getStaticPaths() {
   return sections.map((section, index) => ({
     params: { slug: section.slug },
     props: {
       section,
-      suivante: sections[(index + 1) % sections.length],
+      next: sections[(index + 1) % sections.length],
     },
   }));
 }
 
-const { section, suivante } = Astro.props;
-const nomComplet = `${identite.prenom} ${identite.nom}`;
+const { section, next } = Astro.props;
+const fullName = `${identity.firstName} ${identity.lastName}`;
 ---
 
 <Base
-  titre={`${section.titre} — ${nomComplet}`}
-  description={section.chapo}
+  title={`${section.title} — ${fullName}`}
+  description={section.intro}
 >
   <header class="tete">
     <div class="contenu">
-      <p class="surtitre">{section.numero} — {section.sousTitre}</p>
-      <h1 class="tete__titre">{section.titre}</h1>
-      {section.chapo && <p class="tete__chapo">{section.chapo}</p>}
+      <p class="surtitre">{section.number} — {section.subtitle}</p>
+      <h1 class="tete__titre">{section.title}</h1>
+      {section.intro && <p class="tete__chapo">{section.intro}</p>}
     </div>
   </header>
 
@@ -36,23 +36,23 @@ const nomComplet = `${identite.prenom} ${identite.nom}`;
           <li class={`galerie__item apparait galerie__item--${image.format ?? 'portrait'}`}>
             <figure>
               <img src={image.src} alt={image.alt ?? ''} loading="lazy" />
-              {image.legende && <figcaption>{image.legende}</figcaption>}
+              {image.caption && <figcaption>{image.caption}</figcaption>}
             </figure>
           </li>
         ))}
       </ul>
     ) : (
       <p class="contenu galerie__vide">
-        Les visuels de cette section seront ajoutés prochainement.
+        Visuals for this chapter are coming soon.
       </p>
     )
   }
 
-  <nav class="suite contenu" aria-label="Section suivante">
+  <nav class="suite contenu" aria-label="Next chapter">
     <hr class="filet" />
-    <a class="suite__lien" href={`/${suivante.slug}`}>
-      <span class="surtitre">Chapitre suivant</span>
-      <span class="suite__titre">{suivante.titre}</span>
+    <a class="suite__lien" href={href(next.slug)}>
+      <span class="surtitre">Next chapter</span>
+      <span class="suite__titre">{next.title}</span>
     </a>
   </nav>
 </Base>
@@ -86,7 +86,7 @@ const nomComplet = `${identite.prenom} ${identite.nom}`;
     list-style: none;
   }
 
-  /* Une image paysage occupe deux colonnes quand la place le permet. */
+  /* A landscape image spans two columns when there is room for it. */
   .galerie__item--paysage {
     grid-column: span 2;
   }

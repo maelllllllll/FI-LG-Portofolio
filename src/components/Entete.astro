@@ -1,14 +1,14 @@
 ---
-import { sections, identite } from '../data/site.js';
+import { sections, identity, href, homeHref } from '../data/site.js';
 
-const chemin = Astro.url.pathname.replace(/\/$/, '') || '/';
+const page = Astro.url.pathname.split('/').pop() || 'index.html';
 ---
 
 <header class="entete">
   <div class="entete__barre contenu">
-    <a class="entete__marque" href="/">
+    <a class="entete__marque" href={homeHref}>
       <span class="entete__initiales">LGP</span>
-      <span class="invisible">{identite.prenom} {identite.nom} — accueil</span>
+      <span class="invisible">{identity.firstName} {identity.lastName} — home</span>
     </a>
 
     <button
@@ -17,22 +17,22 @@ const chemin = Astro.url.pathname.replace(/\/$/, '') || '/';
       aria-expanded="false"
       aria-controls="navigation"
     >
-      <span class="invisible">Ouvrir le menu</span>
+      <span class="invisible">Open menu</span>
       <span class="entete__trait" aria-hidden="true"></span>
       <span class="entete__trait" aria-hidden="true"></span>
     </button>
 
-    <nav class="entete__nav" id="navigation" aria-label="Navigation principale">
+    <nav class="entete__nav" id="navigation" aria-label="Main navigation">
       <ul>
         {
           sections.map((section) => (
             <li>
               <a
-                href={`/${section.slug}`}
-                aria-current={chemin === `/${section.slug}` ? 'page' : undefined}
+                href={href(section.slug)}
+                aria-current={page === href(section.slug) ? 'page' : undefined}
               >
-                <span class="entete__numero">{section.numero}</span>
-                {section.titre}
+                <span class="entete__numero">{section.number}</span>
+                {section.title}
               </a>
             </li>
           ))
@@ -182,8 +182,8 @@ const chemin = Astro.url.pathname.replace(/\/$/, '') || '/';
     const ouvert = bouton.getAttribute('aria-expanded') === 'true';
     bouton.setAttribute('aria-expanded', String(!ouvert));
     bouton.querySelector('.invisible').textContent = ouvert
-      ? 'Ouvrir le menu'
-      : 'Fermer le menu';
+      ? 'Open menu'
+      : 'Close menu';
   });
 
   // Referme le menu quand on choisit une destination ou qu'on appuie sur Échap.

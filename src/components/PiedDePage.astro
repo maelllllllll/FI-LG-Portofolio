@@ -1,11 +1,11 @@
 ---
-import { identite, sections, contact } from '../data/site.js';
+import { identity, sections, contact, href } from '../data/site.js';
 
-const annee = new Date().getFullYear();
-const liens = [
-  contact.email && { libelle: 'Email', href: `mailto:${contact.email}` },
-  contact.instagram && { libelle: 'Instagram', href: contact.instagram },
-  contact.siteMarque && { libelle: 'Fête Impériale', href: contact.siteMarque },
+const year = new Date().getFullYear();
+const links = [
+  contact.email && { label: 'Email', href: `mailto:${contact.email}` },
+  contact.instagram && { label: 'Instagram', href: contact.instagram },
+  contact.brandSite && { label: 'Fête Impériale', href: contact.brandSite },
 ].filter(Boolean);
 ---
 
@@ -13,16 +13,16 @@ const liens = [
   <hr class="filet" />
   <div class="contenu pied__grille">
     <div>
-      <p class="surtitre">{identite.prenom} {identite.nom}</p>
-      <p class="pied__titres">{identite.titres.join(' · ')}</p>
+      <p class="surtitre">{identity.firstName} {identity.lastName}</p>
+      <p class="pied__titres">{identity.titles.join(' · ')}</p>
     </div>
 
-    <nav class="pied__nav" aria-label="Navigation de bas de page">
+    <nav class="pied__nav" aria-label="Footer navigation">
       <ul>
         {
           sections.map((section) => (
             <li>
-              <a href={`/${section.slug}`}>{section.titre}</a>
+              <a href={href(section.slug)}>{section.title}</a>
             </li>
           ))
         }
@@ -30,11 +30,11 @@ const liens = [
     </nav>
 
     {
-      liens.length > 0 && (
+      links.length > 0 && (
         <ul class="pied__contacts">
-          {liens.map((lien) => (
+          {links.map((link) => (
             <li>
-              <a href={lien.href}>{lien.libelle}</a>
+              <a href={link.href}>{link.label}</a>
             </li>
           ))}
         </ul>
@@ -42,7 +42,7 @@ const liens = [
     }
   </div>
 
-  <p class="contenu pied__mention">© {annee} {identite.prenom} {identite.nom}</p>
+  <p class="contenu pied__mention">© {year} {identity.firstName} {identity.lastName}</p>
 </footer>
 
 <style>
