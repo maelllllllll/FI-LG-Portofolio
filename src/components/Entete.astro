@@ -48,10 +48,14 @@ const page = Astro.url.pathname.split('/').pop() || 'index.html';
     inset: 0 0 auto 0;
     z-index: 50;
     padding-block: 1.25rem;
+    /* Le voile reste franc sur toute la hauteur du texte avant de s'estomper :
+       sinon la navigation devient illisible dès qu'un visuel clair défile
+       dessous (une page de magazine, un motif sur fond blanc). */
     background: linear-gradient(
       to bottom,
-      rgb(16 15 13 / 0.85),
-      rgb(16 15 13 / 0)
+      rgb(16 15 13 / 0.94) 0%,
+      rgb(16 15 13 / 0.9) 60%,
+      rgb(16 15 13 / 0) 100%
     );
     backdrop-filter: blur(2px);
   }

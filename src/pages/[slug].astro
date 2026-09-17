@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { sections, identity, href } from '../data/site.js';
+import { AsciiFlow } from '../components/ui/ascii-effect.tsx';
 
 // One page per entry in `sections` (src/data/site.js).
 export function getStaticPaths() {
@@ -21,17 +22,62 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
   title={`${section.title} — ${fullName}`}
   description={section.intro}
 >
-  <header class="tete">
-    <div class="contenu">
-      <p class="surtitre">{section.number} — {section.subtitle}</p>
-      <h1 class="tete__titre">{section.title}</h1>
-      {section.intro && <p class="tete__chapo">{section.intro}</p>}
-    </div>
-  </header>
+  {
+    section.asciiHero && (
+      <section class="ascii" aria-labelledby="ascii-titre">
+        {/* La source est un négatif : trait clair sur fond noir. brightnessBoost
+            relève le trait, que l'échantillonnage en grille dilue fortement ;
+            un zoom (scale) l'épaissit encore par rapport à la cellule. */}
+        <AsciiFlow
+          client:load
+          imageSrc={section.asciiHero.src}
+          alt={section.asciiHero.alt}
+          chars=" .:-=+*#%@"
+          fontSize={8}
+          brightnessBoost={5.5}
+          contrast={1}
+          threshold={0.015}
+          posterize={16}
+          ditherStrength={0.6}
+          colors={['#6b5836', '#b8925a', '#f2ece1']}
+          backgroundColor="#100f0d"
+          fit="cover"
+          scale={2.6}
+          flowSpeed={0.16}
+          flowStrength={9}
+          mouseRadius={180}
+          mouseStrength={26}
+        />
+
+        <div class="ascii__texte contenu">
+          <p class="surtitre">{section.number} — {section.subtitle}</p>
+          <p class="ascii__titre" id="ascii-titre">{section.title}</p>
+        </div>
+
+        <span class="ascii__descendre" aria-hidden="true"></span>
+      </section>
+    )
+  }
+
+  {
+    section.asciiHero ? (
+      /* Le titre est déjà affiché sur l'écran d'atterrissage : on enchaîne
+         directement sur les visuels, sans le répéter. */
+      <h1 class="invisible">{section.title}</h1>
+    ) : (
+      <header class="tete">
+        <div class="contenu">
+          <p class="surtitre">{section.number} — {section.subtitle}</p>
+          <h1 class="tete__titre">{section.title}</h1>
+          {section.intro && <p class="tete__chapo">{section.intro}</p>}
+        </div>
+      </header>
+    )
+  }
 
   {
     section.images.length > 0 ? (
-      <ul class="galerie contenu">
+      <ul class:list={['galerie', 'contenu', section.images.length === 1 && 'galerie--solo']}>
         {section.images.map((image) => (
           <li class={`galerie__item apparait galerie__item--${image.format ?? 'portrait'}`}>
             <figure>
@@ -58,6 +104,64 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
 </Base>
 
 <style>
+  /* --- Atterrissage ASCII -------------------------------------------------- */
+
+  .ascii {
+    position: relative;
+    height: 100svh;
+    background: var(--noir);
+    overflow: hidden;
+  }
+
+  /* Les caractères sont trop contrastés pour laisser passer du texte :
+     un voile progressif rend le titre lisible sans masquer le motif. */
+  .ascii::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 55%;
+    background: linear-gradient(
+      to top,
+      rgb(16 15 13 / 0.96) 0%,
+      rgb(16 15 13 / 0.72) 40%,
+      rgb(16 15 13 / 0) 100%
+    );
+    pointer-events: none;
+  }
+
+  .ascii__texte {
+    position: absolute;
+    z-index: 1;
+    inset: auto 0 clamp(3.5rem, 12vh, 8rem) 0;
+    pointer-events: none;
+  }
+
+  .ascii__titre {
+    font-family: var(--display);
+    font-size: clamp(2.25rem, 9vw, 7rem);
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0.75rem 0 0;
+    text-shadow: 0 2px 30px rgb(16 15 13 / 0.8);
+  }
+
+  .ascii__descendre {
+    position: absolute;
+    z-index: 1;
+    bottom: 1.75rem;
+    left: 50%;
+    translate: -50% 0;
+    width: 1px;
+    height: clamp(2rem, 5vh, 3.5rem);
+    background: linear-gradient(to bottom, transparent, var(--accent));
+  }
+
+  /* Sur la page d'atterrissage, le titre est déjà affiché par-dessus le
+     rendu ASCII : on resserre l'en-tête qui suit pour éviter la redite. */
+  .ascii ~ .galerie {
+    padding-top: clamp(3.5rem, 10vw, 7rem);
+  }
+
   .tete {
     padding-top: clamp(7rem, 18vh, 12rem);
     padding-bottom: clamp(2.5rem, 7vw, 5rem);
@@ -89,6 +193,16 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
   /* A landscape image spans two columns when there is room for it. */
   .galerie__item--landscape {
     grid-column: span 2;
+  }
+
+  /* Une image seule n'a pas à se réduire à la largeur d'une colonne : elle
+     occupe toute la mesure. */
+  .galerie--solo {
+    grid-template-columns: 1fr;
+  }
+
+  .galerie--solo .galerie__item--free img {
+    width: 100%;
   }
 
   @media (max-width: 52rem) {

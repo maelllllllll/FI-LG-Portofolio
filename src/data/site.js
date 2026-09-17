@@ -84,6 +84,16 @@ export const sections = [
     subtitle: 'Works',
     intro: '',
     cover: 'images/sections/project.jpg',
+
+    // Atterrissage : le motif rendu en caractères, plein écran. L'original
+    // apparaît ensuite au défilement, dans la galerie.
+    asciiHero: {
+      // Négatif du motif : le trait est clair sur fond noir, ce que le
+      // rendu ASCII sait amplifier (voir le réglage brightnessBoost).
+      src: 'images/project/corps-nus-negatif.jpg',
+      alt: 'Corps nus — motif rendu en caractères ASCII',
+    },
+
     images: [
       {
         src: 'images/project/corps-nus.jpg',
