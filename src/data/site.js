@@ -16,7 +16,7 @@ export const identity = {
   titles: ['Art Direction', 'Design'],
 
   // TODO — still a placeholder. Needs a landscape photo (see README).
-  heroImage: 'images/hero.jpg',
+  heroImage: 'images/hero-madura.jpg',
 
   portrait: 'images/portrait.jpg',
   portraitCaption: '',
