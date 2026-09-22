@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { sections, identity, href } from '../data/site.js';
 import { AsciiFlow } from '../components/ui/ascii-effect.tsx';
+import { NewsletterBookshelf } from '../components/ui/newsletter-bookshelf.tsx';
 
 // One page per entry in `sections` (src/data/site.js).
 export function getStaticPaths() {
@@ -79,7 +80,51 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
   }
 
   {
-    section.images.length > 0 ? (
+    section.collections && (
+      <section class="rayon" aria-labelledby="rayon-titre">
+        <div class="contenu">
+          <p class="surtitre">Collections</p>
+          <h2 class="rayon__titre" id="rayon-titre">{section.collections.length} collections</h2>
+          <p class="rayon__aide">
+            Drag sideways to browse. Click a volume to bring it forward.
+          </p>
+        </div>
+
+        <NewsletterBookshelf
+          client:visible
+          className="rayon__etagere bg-noir text-creme"
+          items={section.collections}
+          brand="Fête Impériale"
+          height={560}
+        />
+      </section>
+    )
+  }
+
+  {
+    section.groups?.map((group) => (
+      <section class="groupe">
+        <div class="contenu">
+          <h2 class="groupe__titre">{group.title}</h2>
+          {group.subtitle && <p class="groupe__soustitre">{group.subtitle}</p>}
+        </div>
+
+        <ul class:list={['galerie', 'contenu', group.images.length === 1 && 'galerie--solo']}>
+          {group.images.map((image) => (
+            <li class={`galerie__item apparait galerie__item--${image.format ?? 'portrait'}`}>
+              <figure>
+                <img src={image.src} alt={image.alt ?? ''} loading="lazy" />
+                {image.caption && <figcaption>{image.caption}</figcaption>}
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  {
+    section.images.length > 0 && (
       <ul class:list={['galerie', 'contenu', section.images.length === 1 && 'galerie--solo']}>
         {section.images.map((image) => (
           <li class={`galerie__item apparait galerie__item--${image.format ?? 'portrait'}`}>
@@ -90,7 +135,11 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
           </li>
         ))}
       </ul>
-    ) : (
+    )
+  }
+
+  {
+    section.images.length === 0 && !section.groups && !section.collections && (
       <p class="contenu galerie__vide">
         Visuals for this chapter are coming soon.
       </p>
@@ -256,6 +305,53 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
     margin: clamp(1.25rem, 3vw, 2rem) 0 0;
     color: var(--texte-sourd);
     font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+  }
+
+  /* --- Étagère des collections -------------------------------------------- */
+
+  .rayon {
+    padding-block: clamp(2rem, 6vw, 4rem);
+  }
+
+  .rayon__titre {
+    font-size: clamp(1.5rem, 4vw, 2.75rem);
+    margin-top: 0.75rem;
+  }
+
+  .rayon__aide {
+    margin: 1rem 0 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(242 236 225 / 0.45);
+  }
+
+  .rayon__etagere {
+    margin-top: clamp(1.5rem, 4vw, 2.5rem);
+    border-block: 1px solid rgb(242 236 225 / 0.12);
+  }
+
+  /* --- Sous-parties -------------------------------------------------------- */
+
+  .groupe {
+    padding-top: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .groupe__titre {
+    font-size: clamp(1.4rem, 3.5vw, 2.25rem);
+  }
+
+  .groupe__soustitre {
+    margin: 0.6rem 0 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .groupe .galerie {
+    margin-top: clamp(1.5rem, 4vw, 2.5rem);
+    padding-bottom: 0;
   }
 
   /* --- Galerie ------------------------------------------------------------ */

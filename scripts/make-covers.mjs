@@ -32,7 +32,7 @@ await sharp('assets-src/press/elle-deco-crush.jpg')
   .toFile('public/images/sections/press.jpg');
 
 // --- 04 Project : un fragment du motif, cadré au centre ---------------------
-const motif = sharp('assets-src/project/corps-nus.jpg');
+const motif = sharp('assets-src/imprimes/corps-nus.jpg');
 const { width, height } = await motif.metadata();
 const cropL = Math.round(height * (L / H));
 await motif
