@@ -30,14 +30,10 @@ export const identity = {
 
 // Couleurs de reliure des volumes. Reprennent la charte du site plutôt que
 // la palette bleue fournie par défaut avec le composant.
-const RELIURE = {
-  noir: { color: '#1a1815', foil: '#b8925a' },
-  vert: { color: '#1f3d2f', foil: '#b8925a' },
-  rouge: { color: '#8c1c1c', foil: '#e8dcc4' },
-  creme: { color: '#efe8d4', foil: '#1a1815' },
-  laiton: { color: '#6b5836', foil: '#f2ece1' },
-  bleu: { color: '#1d2f4a', foil: '#b8925a' },
-};
+// Toutes les reliures sont identiques : papier crème, filets et titre rouges,
+// à la manière d'une collection littéraire. C'est l'uniformité qui fait l'effet
+// de série sur l'étagère.
+const RELIURE = { color: '#f2ece0', foil: '#9b2a24' };
 
 /** Les collections, dans l'ordre chronologique. */
 export const collections = [
@@ -45,17 +41,17 @@ export const collections = [
     id: 'fw16-posh-birds',
     title: 'Posh Birds',
     date: 'FW 2016',
-    ...RELIURE.noir,
+    ...RELIURE,
     images: [
       { src: 'images/collections/fw16-posh-birds/151215-feteimperial-002-073b.jpg', format: 'portrait' },
     ],
   },
-  { id: 'ss17-madeleine', title: 'La Madeleine de Proust', date: 'SS 2017', ...RELIURE.creme },
+  { id: 'ss17-madeleine', title: 'La Madeleine de Proust', date: 'SS 2017', ...RELIURE },
   {
     id: 'ss18-jardin-suspendu',
     title: 'Le Jardin Suspendu',
     date: 'SS 2018',
-    ...RELIURE.vert,
+    ...RELIURE,
     images: [
       { src: 'images/collections/ss18-jardin-suspendu/5812-01.jpg', format: 'landscape' },
       { src: 'images/collections/ss18-jardin-suspendu/5812-02.jpg', format: 'portrait' },
@@ -72,16 +68,16 @@ export const collections = [
       { src: 'images/collections/ss18-jardin-suspendu/img-8390-2.jpg', format: 'free' },
     ],
   },
-  { id: 'ss19-voile-mariee', title: 'Le Voile de la Mariée', date: 'SS 2019', ...RELIURE.creme },
-  { id: 'fw19-botaniste', title: 'La Botaniste', date: 'FW 2019', ...RELIURE.vert },
-  { id: 'ss20-les-nues', title: 'Les Nues', date: 'SS 2020', ...RELIURE.laiton },
-  { id: 'ss21-riviera', title: 'Riviera', date: 'SS 2021', ...RELIURE.bleu },
-  { id: 'fw21-contre-temps', title: 'À Contre-Temps', date: 'FW 2021 — SS 2022', ...RELIURE.rouge },
+  { id: 'ss19-voile-mariee', title: 'Le Voile de la Mariée', date: 'SS 2019', ...RELIURE },
+  { id: 'fw19-botaniste', title: 'La Botaniste', date: 'FW 2019', ...RELIURE },
+  { id: 'ss20-les-nues', title: 'Les Nues', date: 'SS 2020', ...RELIURE },
+  { id: 'ss21-riviera', title: 'Riviera', date: 'SS 2021', ...RELIURE },
+  { id: 'fw21-contre-temps', title: 'À Contre-Temps', date: 'FW 2021 — SS 2022', ...RELIURE },
   {
     id: 'ss23-corsica',
     title: 'Corsica',
     date: 'SS 2023 — FW 2024',
-    ...RELIURE.bleu,
+    ...RELIURE,
     images: [
       { src: 'images/collections/ss23-corsica/000006690004.jpg', format: 'landscape' },
       { src: 'images/collections/ss23-corsica/000006690011.jpg', format: 'portrait' },
@@ -109,12 +105,12 @@ export const collections = [
       { src: 'images/collections/ss23-corsica/sasha-2.jpg', format: 'portrait' },
     ],
   },
-  { id: 'fw23-indistinct-chatter', title: 'Indistinct Chatter', date: 'FW 2023', ...RELIURE.noir },
+  { id: 'fw23-indistinct-chatter', title: 'Indistinct Chatter', date: 'FW 2023', ...RELIURE },
   {
     id: 'ss24-blue-sand',
     title: 'Blue Sand',
     date: 'SS 2024',
-    ...RELIURE.bleu,
+    ...RELIURE,
     images: [
       { src: 'images/collections/ss24-blue-sand/f0a3141.jpg', format: 'portrait' },
       { src: 'images/collections/ss24-blue-sand/f0a3189.jpg', format: 'portrait' },
@@ -161,6 +157,30 @@ export const sections = [
       'A womenswear label founded in 2015, built around drawing and printed ' +
       'textile. Eleven collections to date.',
     cover: 'images/sections/fete-imperiale.jpg',
+
+    // TODO — rédigé à partir des articles de presse du Drive (ELLE,
+    // FashionNetwork, Marie Claire Maison). Le brand deck 2022 pèse 13 Mo et
+    // reste hors de portée du connecteur : à valider par Laura, et à enrichir
+    // dès que le deck sera déposé.
+    brand: {
+      emblem: 'images/brand/blason-negatif.jpg',
+      statement:
+        'Fête Impériale was founded in Paris in 2015. The label builds its ' +
+        'womenswear on drawing: prints are conceived first, then the garment ' +
+        'follows. The result is a dreamlike, quietly decadent vocabulary — ' +
+        'closer to the graphic excess of the 1980s than to minimalism.',
+      facts: [
+        { label: 'Founded', value: 'Paris, 2015' },
+        { label: 'Founder', value: 'Laura Gauthier-Petit' },
+        { label: 'Collections', value: 'Eleven, since FW 2016' },
+        { label: 'Typography', value: 'Futura' },
+      ],
+      collaborations: [
+        { name: 'Boucheron', note: 'Uniforms for the Place Vendôme townhouse reopening' },
+        { name: 'Madura', note: 'Appolonie interior capsule, 2019' },
+        { name: 'L’Impératrice', note: 'Stage costumes, 2020 tour' },
+      ],
+    },
 
     collections: collectionVolumes,
 

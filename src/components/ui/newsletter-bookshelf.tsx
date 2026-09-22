@@ -39,7 +39,6 @@ type BookLayout = NewsletterBookshelfItem & {
   width: number;
   bookHeight: number;
   depth: number;
-  motif: number;
   color: string;
   foil: string;
 };
@@ -164,119 +163,49 @@ function deriveLayout(items: NewsletterBookshelfItem[]) {
       width,
       bookHeight,
       depth: bookHeight * 0.67,
-      motif: Math.floor(random() * 8),
       color,
       foil,
     };
   });
 }
 
-function roundedRect(
+/** Dessine un texte centré avec un interlettrage, que le canvas ne gère pas. */
+function drawTracked(
   context: CanvasRenderingContext2D,
-  x: number,
+  text: string,
+  centerX: number,
   y: number,
-  width: number,
-  height: number,
-  radius: number,
+  spacing: number,
 ) {
-  context.beginPath();
-  context.roundRect(x, y, width, height, radius);
+  const letters = [...text];
+  const widths = letters.map((letter) => context.measureText(letter).width);
+  const total =
+    widths.reduce((sum, width) => sum + width, 0) + spacing * (letters.length - 1);
+  let x = centerX - total / 2;
+  letters.forEach((letter, index) => {
+    context.fillText(letter, x, y);
+    x += widths[index]! + spacing;
+  });
 }
 
-function drawMotif(
+/** Découpe un titre en lignes tenant dans une largeur donnée. */
+function wrapLines(
   context: CanvasRenderingContext2D,
-  motif: number,
-  x: number,
-  y: number,
-  size: number,
-  color: string,
+  text: string,
+  maxWidth: number,
 ) {
-  context.save();
-  context.translate(x + size / 2, y + size / 2);
-  context.strokeStyle = color;
-  context.fillStyle = color;
-  context.lineWidth = Math.max(2, size * 0.035);
-
-  if (motif === 0) {
-    for (let index = -2; index <= 2; index += 1) {
-      context.beginPath();
-      context.arc(0, 0, size * (0.12 + index * 0.035), 0, Math.PI * 2);
-      context.stroke();
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/)) {
+    const next = line ? `${line} ${word}` : word;
+    if (context.measureText(next).width <= maxWidth || !line) line = next;
+    else {
+      lines.push(line);
+      line = word;
     }
-  } else if (motif === 1) {
-    context.rotate(Math.PI / 4);
-    for (let index = -1; index <= 1; index += 1) {
-      context.strokeRect(
-        -size * (0.24 + index * 0.055),
-        -size * (0.24 + index * 0.055),
-        size * (0.48 + index * 0.11),
-        size * (0.48 + index * 0.11),
-      );
-    }
-  } else if (motif === 2) {
-    for (let index = 0; index < 6; index += 1) {
-      context.rotate(Math.PI / 3);
-      roundedRect(context, -size * 0.045, -size * 0.36, size * 0.09, size * 0.28, size * 0.04);
-      context.fill();
-    }
-    context.beginPath();
-    context.arc(0, 0, size * 0.11, 0, Math.PI * 2);
-    context.fill();
-  } else if (motif === 3) {
-    context.beginPath();
-    for (let index = 0; index < 12; index += 1) {
-      const radius = index % 2 ? size * 0.17 : size * 0.35;
-      const angle = -Math.PI / 2 + (index * Math.PI) / 6;
-      const px = Math.cos(angle) * radius;
-      const py = Math.sin(angle) * radius;
-      if (index === 0) context.moveTo(px, py);
-      else context.lineTo(px, py);
-    }
-    context.closePath();
-    context.stroke();
-  } else if (motif === 4) {
-    for (let row = -2; row <= 2; row += 1) {
-      for (let column = -2; column <= 2; column += 1) {
-        if ((row + column) % 2 === 0) {
-          context.beginPath();
-          context.arc(column * size * 0.13, row * size * 0.13, size * 0.035, 0, Math.PI * 2);
-          context.fill();
-        }
-      }
-    }
-  } else if (motif === 5) {
-    for (let index = -2; index <= 2; index += 1) {
-      context.beginPath();
-      context.moveTo(-size * 0.34, index * size * 0.12);
-      context.bezierCurveTo(
-        -size * 0.12,
-        index * size * 0.12 - size * 0.11,
-        size * 0.12,
-        index * size * 0.12 + size * 0.11,
-        size * 0.34,
-        index * size * 0.12,
-      );
-      context.stroke();
-    }
-  } else if (motif === 6) {
-    context.beginPath();
-    context.moveTo(0, -size * 0.37);
-    context.lineTo(size * 0.34, size * 0.28);
-    context.lineTo(-size * 0.34, size * 0.28);
-    context.closePath();
-    context.stroke();
-    context.beginPath();
-    context.arc(0, size * 0.02, size * 0.11, 0, Math.PI * 2);
-    context.fill();
-  } else {
-    context.rotate(Math.PI / 4);
-    context.fillRect(-size * 0.035, -size * 0.36, size * 0.07, size * 0.72);
-    context.fillRect(-size * 0.36, -size * 0.035, size * 0.72, size * 0.07);
-    context.beginPath();
-    context.arc(0, 0, size * 0.25, 0, Math.PI * 2);
-    context.stroke();
   }
-  context.restore();
+  if (line) lines.push(line);
+  return lines;
 }
 
 function addTexture(
@@ -294,61 +223,6 @@ function addTexture(
     image.data[offset + 2] = Math.max(0, Math.min(255, image.data[offset + 2]! + noise));
   }
   context.putImageData(image, 0, 0);
-}
-
-function drawClothWeave(
-  context: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  seed: number,
-) {
-  const random = seeded(seed);
-  context.save();
-  context.lineCap = "round";
-
-  context.globalCompositeOperation = "multiply";
-  for (let x = 0.5; x < width; x += 3) {
-    context.strokeStyle = `rgba(18, 16, 14, ${0.03 + random() * 0.035})`;
-    context.lineWidth = 0.35 + random() * 0.3;
-    context.beginPath();
-    context.moveTo(x + (random() - 0.5) * 0.5, 0);
-    context.lineTo(x + (random() - 0.5) * 0.5, height);
-    context.stroke();
-  }
-
-  context.globalCompositeOperation = "screen";
-  for (let y = 0.5; y < height; y += 3) {
-    context.strokeStyle = `rgba(255, 248, 232, ${0.035 + random() * 0.03})`;
-    context.lineWidth = 0.3 + random() * 0.25;
-    context.beginPath();
-    context.moveTo(0, y + (random() - 0.5) * 0.5);
-    context.lineTo(width, y + (random() - 0.5) * 0.5);
-    context.stroke();
-  }
-
-  context.globalCompositeOperation = "overlay";
-  for (let index = 0; index < Math.floor((width * height) / 850); index += 1) {
-    const x = random() * width;
-    const y = random() * height;
-    const length = 3 + random() * 13;
-    context.strokeStyle = `rgba(255, 255, 255, ${0.035 + random() * 0.055})`;
-    context.lineWidth = 0.35 + random() * 0.4;
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x + (random() - 0.5) * 2, y + length);
-    context.stroke();
-  }
-
-  context.globalCompositeOperation = "source-over";
-  const edgeShade = context.createLinearGradient(0, 0, width, 0);
-  edgeShade.addColorStop(0, "rgba(0,0,0,.16)");
-  edgeShade.addColorStop(0.045, "rgba(0,0,0,.025)");
-  edgeShade.addColorStop(0.5, "rgba(255,255,255,.025)");
-  edgeShade.addColorStop(0.955, "rgba(0,0,0,.025)");
-  edgeShade.addColorStop(1, "rgba(0,0,0,.18)");
-  context.fillStyle = edgeShade;
-  context.fillRect(0, 0, width, height);
-  context.restore();
 }
 
 function paperTexture(book: BookLayout) {
@@ -413,6 +287,11 @@ function paperTexture(book: BookLayout) {
   return texture;
 }
 
+/**
+ * Couverture à la manière d'une collection littéraire : papier crème, double
+ * filet rouge, auteur en haut, titre en rouge au centre, éditeur en bas.
+ * Aucun ornement — la mise en page fait tout le travail.
+ */
 function coverTexture(book: BookLayout, brand: string, face: "cover" | "spine") {
   if (typeof document === "undefined") return null;
   const canvas = document.createElement("canvas");
@@ -421,69 +300,73 @@ function coverTexture(book: BookLayout, brand: string, face: "cover" | "spine") 
   const context = canvas.getContext("2d");
   if (!context) return null;
 
-  context.fillStyle = book.color;
+  const papier = book.color;
+  const rouge = book.foil;
+  const encre = "#1c1a17";
+
+  context.fillStyle = papier;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  addTexture(
-    context,
-    canvas.width,
-    canvas.height,
-    hash(`${book.id}-${face}-noise`),
-  );
-  drawClothWeave(
-    context,
-    canvas.width,
-    canvas.height,
-    hash(`${book.id}-${face}-weave`),
-  );
-  context.fillStyle = book.foil;
-  context.strokeStyle = book.foil;
-  context.textBaseline = "top";
-  context.shadowColor = "rgba(0, 0, 0, .3)";
-  context.shadowBlur = 1.4;
-  context.shadowOffsetX = 0.8;
-  context.shadowOffsetY = 1.1;
+  addTexture(context, canvas.width, canvas.height, hash(`${book.id}-${face}-grain`));
+  context.textBaseline = "middle";
 
   if (face === "cover") {
-    const margin = 58;
-    context.font = "500 21px ui-monospace, SFMono-Regular, monospace";
-    context.fillText(book.date, margin, 58);
-    context.font = "700 54px Georgia, serif";
-    const words = book.title.split(/\s+/);
-    const lines: string[] = [];
-    let line = "";
-    for (const word of words) {
-      const next = line ? `${line} ${word}` : word;
-      if (context.measureText(next).width < canvas.width - margin * 2 || !line) line = next;
-      else {
-        lines.push(line);
-        line = word;
-      }
-    }
-    if (line) lines.push(line);
-    lines.slice(0, 5).forEach((text, index) => context.fillText(text, margin, 180 + index * 61));
-    context.fillRect(margin, 180 + Math.min(lines.length, 5) * 61 + 24, 92, 5);
-    drawMotif(context, book.motif, 316, 510, 130, book.foil);
-    context.font = "700 19px ui-monospace, SFMono-Regular, monospace";
-    context.fillText(brand.toUpperCase(), margin, 690);
+    const marge = 30;
+    context.strokeStyle = rouge;
+    context.lineWidth = 3;
+    context.strokeRect(marge, marge, canvas.width - marge * 2, canvas.height - marge * 2);
+    context.lineWidth = 1;
+    context.strokeRect(marge + 11, marge + 11, canvas.width - (marge + 11) * 2, canvas.height - (marge + 11) * 2);
+
+    const milieu = canvas.width / 2;
+    const dedans = canvas.width - marge * 2 - 70;
+
+    context.fillStyle = encre;
+    context.font = '400 23px Georgia, "Times New Roman", serif';
+    drawTracked(context, "LAURA GAUTHIER-PETIT", milieu, 168, 2.4);
+
+    context.fillStyle = rouge;
+    context.font = 'bold 52px Georgia, "Times New Roman", serif';
+    const lignes = wrapLines(context, book.title.toUpperCase(), dedans).slice(0, 4);
+    const depart = 360 - ((lignes.length - 1) * 62) / 2;
+    lignes.forEach((ligne, index) => drawTracked(context, ligne, milieu, depart + index * 62, 1.5));
+
+    context.fillStyle = encre;
+    context.font = '400 21px Georgia, "Times New Roman", serif';
+    drawTracked(context, book.date, milieu, 592, 3);
+
+    context.font = '400 23px Georgia, "Times New Roman", serif';
+    drawTracked(context, brand.toUpperCase(), milieu, 668, 3.4);
   } else {
-    const gradient = context.createLinearGradient(0, 0, canvas.width, 0);
-    gradient.addColorStop(0, "rgba(0,0,0,.28)");
-    gradient.addColorStop(0.18, "rgba(0,0,0,0)");
-    gradient.addColorStop(0.82, "rgba(0,0,0,0)");
-    gradient.addColorStop(1, "rgba(0,0,0,.28)");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = book.foil;
-    context.fillRect(22, 26, canvas.width - 44, 3);
-    context.fillRect(22, 704, canvas.width - 44, 3);
+    const milieu = canvas.width / 2;
+    context.strokeStyle = rouge;
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(20, 40);
+    context.lineTo(canvas.width - 20, 40);
+    context.moveTo(20, canvas.height - 40);
+    context.lineTo(canvas.width - 20, canvas.height - 40);
+    context.stroke();
+
     context.save();
-    context.translate(canvas.width / 2, 58);
+    context.translate(milieu, 86);
     context.rotate(Math.PI / 2);
-    context.font = "700 37px Georgia, serif";
-    const title = book.title.length > 36 ? `${book.title.slice(0, 34)}…` : book.title;
-    context.fillText(title, 0, 13);
+    context.fillStyle = rouge;
+    context.font = 'bold 34px Georgia, "Times New Roman", serif';
+    const titre = book.title.length > 30 ? `${book.title.slice(0, 28)}…` : book.title;
+    context.textAlign = "left";
+    context.fillText(titre.toUpperCase(), 0, 0);
     context.restore();
-    drawMotif(context, book.motif, 29, 625, 54, book.foil);
+
+    // Même sens de lecture que le titre : aligné à droite, le texte se termine
+    // en bas de la tranche au lieu d'y remonter à l'envers.
+    context.save();
+    context.translate(milieu, canvas.height - 64);
+    context.rotate(Math.PI / 2);
+    context.fillStyle = encre;
+    context.font = '400 17px Georgia, "Times New Roman", serif';
+    context.textAlign = "right";
+    context.fillText(book.date, 0, 0);
+    context.restore();
   }
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -492,7 +375,6 @@ function coverTexture(book: BookLayout, brand: string, face: "cover" | "spine") 
   texture.needsUpdate = true;
   return texture;
 }
-
 function damp(current: number, target: number, speed: number, delta: number) {
   return THREE.MathUtils.lerp(current, target, 1 - Math.exp(-speed * delta));
 }

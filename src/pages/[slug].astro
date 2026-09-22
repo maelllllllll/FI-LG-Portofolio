@@ -80,6 +80,41 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
   }
 
   {
+    section.brand && (
+      <section class="marque contenu" aria-labelledby="marque-titre">
+        <h2 class="invisible" id="marque-titre">The brand</h2>
+
+        <figure class="marque__blason apparait">
+          <img src={section.brand.emblem} alt="Fête Impériale crest" loading="lazy" />
+        </figure>
+
+        <div class="marque__texte apparait">
+          <p class="marque__statement">{section.brand.statement}</p>
+
+          <dl class="marque__faits">
+            {section.brand.facts.map((fait) => (
+              <div>
+                <dt>{fait.label}</dt>
+                <dd>{fait.value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p class="surtitre marque__surtitre">Selected collaborations</p>
+          <ul class="marque__collabs">
+            {section.brand.collaborations.map((collab) => (
+              <li>
+                <span class="marque__collab-nom">{collab.name}</span>
+                <span class="marque__collab-note">{collab.note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
     section.collections && (
       <section class="rayon" aria-labelledby="rayon-titre">
         <div class="contenu">
@@ -305,6 +340,84 @@ const fullName = `${identity.firstName} ${identity.lastName}`;
     margin: clamp(1.25rem, 3vw, 2rem) 0 0;
     color: var(--texte-sourd);
     font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+  }
+
+  /* --- La marque ----------------------------------------------------------- */
+
+  .marque {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+    padding-block: clamp(1rem, 4vw, 3rem) clamp(3rem, 8vw, 5rem);
+  }
+
+  .marque__blason {
+    margin: 0;
+    max-width: 18rem;
+  }
+
+  .marque__blason img {
+    width: 100%;
+  }
+
+  .marque__statement {
+    margin: 0;
+    max-width: 52ch;
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+    color: var(--texte-sourd);
+  }
+
+  .marque__faits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+    gap: 1.25rem 2rem;
+    margin: clamp(2rem, 5vw, 3rem) 0 0;
+  }
+
+  .marque__faits dt {
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .marque__faits dd {
+    margin: 0.4rem 0 0;
+    font-size: 0.95rem;
+  }
+
+  .marque__surtitre {
+    margin-top: clamp(2.25rem, 5vw, 3rem);
+  }
+
+  .marque__collabs {
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .marque__collabs li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid rgb(242 236 225 / 0.1);
+  }
+
+  .marque__collab-nom {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    min-width: 9rem;
+  }
+
+  .marque__collab-note {
+    color: var(--texte-sourd);
+    font-size: 0.9rem;
   }
 
   /* --- Étagère des collections -------------------------------------------- */
