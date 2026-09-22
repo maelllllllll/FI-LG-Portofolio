@@ -1,0 +1,165 @@
+---
+import Base from '../layouts/Base.astro';
+import { collections, identity, href } from '../data/site.js';
+
+// Une page par collection qui dispose de visuels. Le nom de fichier garde le
+// préfixe "collection-" pour rester à la racine : le site utilise des chemins
+// relatifs, qu'un sous-dossier casserait.
+export function getStaticPaths() {
+  return collections
+    .filter((collection) => collection.images?.length)
+    .map((collection, index, liste) => ({
+      params: { slug: collection.id },
+      props: {
+        collection,
+        previous: liste[index - 1],
+        next: liste[index + 1],
+      },
+    }));
+}
+
+const { collection, previous, next } = Astro.props;
+const fullName = `${identity.firstName} ${identity.lastName}`;
+---
+
+<Base
+  title={`${collection.title} — Fête Impériale`}
+  description={`${collection.title}, ${collection.date} — a Fête Impériale collection by ${fullName}.`}
+>
+  <header class="tete">
+    <div class="contenu">
+      <p class="surtitre">
+        <a class="tete__retour" href={href('fete-imperiale')}>Fête Impériale</a>
+        <span aria-hidden="true"> — </span>{collection.date}
+      </p>
+      <h1 class="tete__titre">{collection.title}</h1>
+    </div>
+  </header>
+
+  <ul class:list={['galerie', 'contenu', collection.images.length === 1 && 'galerie--solo']}>
+    {
+      collection.images.map((image) => (
+        <li class={`galerie__item apparait galerie__item--${image.format ?? 'portrait'}`}>
+          <figure>
+            <img src={image.src} alt={image.alt ?? ''} loading="lazy" />
+            {image.caption && <figcaption>{image.caption}</figcaption>}
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+
+  <nav class="suite contenu" aria-label="Other collections">
+    <hr class="filet" />
+    <div class="suite__paire">
+      {
+        previous && (
+          <a class="suite__lien" href={`collection-${previous.id}.html`}>
+            <span class="surtitre">Previous</span>
+            <span class="suite__titre">{previous.title}</span>
+          </a>
+        )
+      }
+      {
+        next && (
+          <a class="suite__lien suite__lien--fin" href={`collection-${next.id}.html`}>
+            <span class="surtitre">Next</span>
+            <span class="suite__titre">{next.title}</span>
+          </a>
+        )
+      }
+    </div>
+  </nav>
+</Base>
+
+<style>
+  .tete {
+    padding-top: clamp(7rem, 18vh, 12rem);
+    padding-bottom: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .tete__titre {
+    font-size: clamp(2.25rem, 8vw, 6rem);
+    margin-top: 0.85rem;
+  }
+
+  .tete__retour {
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--moyen);
+  }
+
+  .tete__retour:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  /* Un défilé mêle portraits, paysages et plans serrés. Une grille les
+     alignerait sur des rangées de hauteur égale, creusant des trous sous les
+     images les plus courtes ; des colonnes laissent chaque visuel garder sa
+     hauteur et se suivre sans vide. */
+  .galerie {
+    columns: 3 20rem;
+    column-gap: clamp(1rem, 3vw, 2.5rem);
+    margin: 0 auto;
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+    list-style: none;
+  }
+
+  .galerie--solo {
+    columns: 1;
+  }
+
+  .galerie__item {
+    /* Empêche une image d'être coupée entre deux colonnes. */
+    break-inside: avoid;
+    margin-bottom: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .galerie figure {
+    margin: 0;
+  }
+
+  .galerie img {
+    width: 100%;
+    height: auto;
+    background: var(--noir-doux);
+  }
+
+  .galerie figcaption {
+    margin-top: 0.8rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(242 236 225 / 0.45);
+  }
+
+  .suite__paire {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .suite__lien {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .suite__lien--fin {
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .suite__titre {
+    font-family: var(--display);
+    font-size: clamp(1.25rem, 4vw, 2.5rem);
+    text-transform: uppercase;
+    line-height: 1;
+    transition: color var(--moyen);
+  }
+
+  .suite__lien:hover .suite__titre {
+    color: var(--accent);
+  }
+</style>

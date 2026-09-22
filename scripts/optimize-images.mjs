@@ -70,7 +70,13 @@ async function principal() {
 
   for (const source of sources) {
     const relatif = path.relative(ENTREE, source);
-    const dossierSortie = path.join(SORTIE, assainir(path.dirname(relatif)) === '.' ? '' : assainir(path.dirname(relatif)));
+    // Chaque segment est assaini séparément : sinon les barres obliques
+    // disparaissent et l'arborescence est aplatie en un seul nom.
+    const dossier = path.dirname(relatif);
+    const dossierSortie =
+      dossier === '.'
+        ? SORTIE
+        : path.join(SORTIE, ...dossier.split(path.sep).map(assainir));
     await mkdir(dossierSortie, { recursive: true });
 
     const base = assainir(path.basename(relatif, path.extname(relatif)));

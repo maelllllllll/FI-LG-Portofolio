@@ -41,9 +41,36 @@ const RELIURE = {
 
 /** Les collections, dans l'ordre chronologique. */
 export const collections = [
-  { id: 'fw16-posh-birds', title: 'Posh Birds', date: 'FW 2016', ...RELIURE.noir },
+  {
+    id: 'fw16-posh-birds',
+    title: 'Posh Birds',
+    date: 'FW 2016',
+    ...RELIURE.noir,
+    images: [
+      { src: 'images/collections/fw16-posh-birds/151215-feteimperial-002-073b.jpg', format: 'portrait' },
+    ],
+  },
   { id: 'ss17-madeleine', title: 'La Madeleine de Proust', date: 'SS 2017', ...RELIURE.creme },
-  { id: 'ss18-jardin-suspendu', title: 'Le Jardin Suspendu', date: 'SS 2018', ...RELIURE.vert },
+  {
+    id: 'ss18-jardin-suspendu',
+    title: 'Le Jardin Suspendu',
+    date: 'SS 2018',
+    ...RELIURE.vert,
+    images: [
+      { src: 'images/collections/ss18-jardin-suspendu/feteimpariale-2-hd-srgb.jpg', format: 'landscape' },
+      { src: 'images/collections/ss18-jardin-suspendu/feteimpariale-3-hd-srgb-ld.jpg', format: 'landscape' },
+      { src: 'images/collections/ss18-jardin-suspendu/campaign-fi-12046-hd-srgb.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/campaign-fi-12216-hd-srgb.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/campaign-fi-12421-hd-srgb.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/boldini-js-ld.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/boldini-ocre-ld.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/arte-fushia-ld.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/5812-01.jpg', format: 'landscape' },
+      { src: 'images/collections/ss18-jardin-suspendu/5812-02.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/5817-25.jpg', format: 'portrait' },
+      { src: 'images/collections/ss18-jardin-suspendu/img-8390-2.jpg', format: 'free' },
+    ],
+  },
   { id: 'ss19-voile-mariee', title: 'Le Voile de la Mariée', date: 'SS 2019', ...RELIURE.creme },
   { id: 'fw19-botaniste', title: 'La Botaniste', date: 'FW 2019', ...RELIURE.vert },
   { id: 'ss20-les-nues', title: 'Les Nues', date: 'SS 2020', ...RELIURE.laiton },
@@ -53,6 +80,19 @@ export const collections = [
   { id: 'fw23-indistinct-chatter', title: 'Indistinct Chatter', date: 'FW 2023', ...RELIURE.noir },
   { id: 'ss24-blue-sand', title: 'Blue Sand', date: 'SS 2024', ...RELIURE.bleu },
 ];
+
+/** Lien vers une collection. */
+export const collectionHref = (id) => `collection-${id}.html`;
+
+/**
+ * Les volumes tels que l'étagère les attend. Seules les collections pourvues
+ * de visuels reçoivent un lien : sans `href`, cliquer un volume le met en
+ * avant sans mener à une page vide.
+ */
+export const collectionVolumes = collections.map((collection) => ({
+  ...collection,
+  href: collection.images?.length ? collectionHref(collection.id) : undefined,
+}));
 
 export const sections = [
   {
@@ -65,7 +105,7 @@ export const sections = [
       'textile. Eleven collections to date.',
     cover: 'images/sections/fete-imperiale.jpg',
 
-    collections,
+    collections: collectionVolumes,
 
     groups: [
       {
